@@ -22,19 +22,32 @@ export async function getAllMessages() {
 export async function addMessage(
     messageId: string,
     userId: string,
-    content: string
+    content: string,
+    role: string,
+    chatId: string
 ) {
     const params = {
         TableName: 'Messages',
         Item: {
-            messageId: { S: messageId }, // DynamoDB requires attribute values to specify data types
+            chatId: { S: chatId },
+            messageId: { S: messageId },
             userId: { S: userId },
-            messageContent: { S: content },
+            messageContent: {
+                M: {
+                    role: { S: role },
+                    content: { S: content },
+                },
+            },
             createdAt: { S: new Date().toISOString() },
         },
     }
 
     try {
+        console.log('toeoeo')
+
+        console.log(params)
+        console.log('toeoeo')
+
         const command = new PutItemCommand(params)
         await db.send(command)
         return { success: true, message: 'Message added successfully' }
@@ -44,12 +57,12 @@ export async function addMessage(
     }
 }
 
-export async function getMessagesByUserId(userId: string) {
+export async function getMessagesByChatId(chatId: string) {
     const params = {
         TableName: 'Messages',
-        KeyConditionExpression: 'userId = :userId',
+        KeyConditionExpression: 'chatId = :chatId',
         ExpressionAttributeValues: {
-            ':userId': { S: userId }, // Specify the data type
+            ':chatId': { S: chatId }, // Specify the data type
         },
     }
 
@@ -58,13 +71,12 @@ export async function getMessagesByUserId(userId: string) {
         const data = await db.send(command)
         return data.Items // Returns the messages for the given userId
     } catch (error) {
-        console.error('Error fetching messages by userId:', error)
+        console.error('Error fetching messages by chatId:', error)
         throw new Error('Could not fetch messages for user')
     }
 }
 
 export async function getUserById(userId: string) {
-    console.log(userId)
     const params = {
         TableName: 'Users',
         KeyConditionExpression: 'userId = :userId',
@@ -83,7 +95,6 @@ export async function getUserById(userId: string) {
 }
 
 export async function createUser(userId: string, emailAddress: string) {
-    console.log('CA:::LLLLLLL')
     const params = {
         TableName: 'Users',
         Item: {
@@ -93,7 +104,6 @@ export async function createUser(userId: string, emailAddress: string) {
         },
     }
     try {
-        console.log(params.Item)
         const command = new PutItemCommand(params)
         await db.send(command)
         return { success: true, message: 'Message added successfully' }
@@ -102,3 +112,27 @@ export async function createUser(userId: string, emailAddress: string) {
         throw new Error('Could not fetch messages')
     }
 }
+
+// export async function getMessagesByChatId(
+//     chatId: string
+// ) {
+//     const params = {
+//         TableName: 'Messages',
+//         KeyConditionExpression:
+//             'userId = :userId AND chatId = :chatId',
+//         ExpressionAttributeValues: {
+
+//             ':chatId': { S: chatId },
+//             ':todaysDate': { S: new Date().toISOString() },
+//         },
+//     }
+
+//     try {
+//         const command = new QueryCommand(params)
+//         const data = await db.send(command)
+//         return data.Items // Returns the messages for the given userId
+//     } catch (error) {
+//         console.error('Error fetching messages by userId:', error)
+//         throw new Error('Could not fetch messages for user')
+//     }
+// }
