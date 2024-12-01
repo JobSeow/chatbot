@@ -1,7 +1,7 @@
 export default function Home() {
     return (
-        <div className="w-screen h-screen bg-black justify-center items-center">
-            <div>Home</div>
+        <div className="w-screen h-screen  justify-center items-center">
+            <div>HOMEMMEE</div>
         </div>
     )
 }
