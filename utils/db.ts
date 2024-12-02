@@ -63,12 +63,12 @@ export async function getMessagesByChatIdAndUserEmail(
     }
 }
 
-export async function getUserById(userEmail: string) {
+export async function getUserById(userId: string) {
     const params = {
         TableName: 'Users',
-        KeyConditionExpression: 'userEmail = :userEmail',
+        KeyConditionExpression: 'userId = :userId',
         ExpressionAttributeValues: {
-            ':userEmail': { S: userEmail },
+            ':userId': { S: userId },
         },
     }
     try {
