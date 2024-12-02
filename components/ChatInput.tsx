@@ -3,32 +3,20 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { useState, FormEvent } from 'react'
 import { faPaperPlane } from '@fortawesome/free-solid-svg-icons' // Import chatbot or robot icon
-import { createMessage } from '@/utils/api'
 
 type Props = {
-    chatId: string
+    sendMessage: () => void
+    setPrompt: () => void
+    prompt: string
 }
 
-function ChatInput({ chatId }: Props) {
-    const [prompt, setPrompt] = useState('')
-    const [isLoading, setIsLoading] = useState(true)
-    const handleOnClick = async () => {}
-    // const { data: session } = useSession()
+function ChatInput({ sendMessage, setPrompt, prompt }: Props) {
+    const [isLoading, setIsLoading] = useState(false)
 
-    //useSWR to get model
-    // const { data: model } = useSWR('model', {
-    //     fallbackData: 'text-davinci-003',
-    // })
-
-    const sendMessage = async () => {
-        try {
-            console.log('=================================')
-            console.log(prompt)
-            await createMessage(prompt.trim(), chatId)
-            // setPrompt('')
-            // setIsLoading(false)
-        } catch (error: any) {
-            console.log(error.message)
+    const handleKeyDown = (event) => {
+        if (event.key === 'Enter') {
+            event.preventDefault() // Prevents the newline in textarea
+            sendMessage()
         }
     }
 
@@ -37,6 +25,7 @@ function ChatInput({ chatId }: Props) {
             {/* <form className="p-5 space-x-5 flex"> */}
             <div className="p-5 space-x-5 flex">
                 <input
+                    onKeyDown={handleKeyDown}
                     className="
                         bg-transparent 
                         focus:outline-none 
@@ -50,11 +39,13 @@ function ChatInput({ chatId }: Props) {
                     placeholder="Send a message."
                 />
 
-                {/* send button */}
                 <button
                     disabled={false}
                     type="submit"
-                    onClick={sendMessage}
+                    onClick={() => {
+                        setIsLoading(true)
+                        sendMessage()
+                    }}
                     className="text-gray-200
                         hover:  px-2 py-1 rounded
                         disabled:text-gray-500 disabled:cursor-not-allowed"

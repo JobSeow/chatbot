@@ -5,20 +5,6 @@ import {
     QueryCommand,
 } from '@aws-sdk/client-dynamodb'
 
-export async function getAllMessages() {
-    const params = {
-        TableName: 'Messages',
-    }
-    try {
-        const command = new ScanCommand(params)
-        const data = await db.send(command)
-        return data.Items // Returns the messages
-    } catch (error) {
-        console.error('Error fetching messages:', error)
-        throw new Error('Could not fetch messages')
-    }
-}
-
 export async function addMessage(
     messageId: string,
     userId: string,
@@ -43,11 +29,6 @@ export async function addMessage(
     }
 
     try {
-        console.log('toeoeo')
-
-        console.log(params)
-        console.log('toeoeo')
-
         const command = new PutItemCommand(params)
         await db.send(command)
         return { success: true, message: 'Message added successfully' }
@@ -113,26 +94,33 @@ export async function createUser(userId: string, emailAddress: string) {
     }
 }
 
-// export async function getMessagesByChatId(
-//     chatId: string
-// ) {
-//     const params = {
-//         TableName: 'Messages',
-//         KeyConditionExpression:
-//             'userId = :userId AND chatId = :chatId',
-//         ExpressionAttributeValues: {
+export async function getMessagesByUserId(userId: string) {
+    const params = {
+        TableName: 'Messages',
+        KeyConditionExpression: 'userId = :userId', // Assuming userId is the partition key
+        FilterExpression: 'userId = :userId', // Apply a filter for chatId (non-key attribute)
+        ExpressionAttributeValues: {
+            ':userId': { S: userId }, // Dynamically insert the userId value
+        },
+    }
 
-//             ':chatId': { S: chatId },
-//             ':todaysDate': { S: new Date().toISOString() },
-//         },
-//     }
+    try {
+        const command = new ScanCommand(params)
+        const data = await db.send(command)
+        const firstMessages = data.Items.reduce((acc: any, message: any) => {
+            const chatId = message.chatId.S
 
-//     try {
-//         const command = new QueryCommand(params)
-//         const data = await db.send(command)
-//         return data.Items // Returns the messages for the given userId
-//     } catch (error) {
-//         console.error('Error fetching messages by userId:', error)
-//         throw new Error('Could not fetch messages for user')
-//     }
-// }
+            if (!acc[chatId]) {
+                acc[chatId] = message
+            }
+
+            return acc
+        }, {})
+
+        const result = Object.values(firstMessages)
+        return result
+    } catch (error) {
+        console.error('Error fetching messages by userId:', error)
+        throw new Error('Could not fetch messages for user')
+    }
+}

@@ -3,7 +3,6 @@ const createURL = (path: string) => {
 }
 
 export const createMessage = async (content: string, chatId: string) => {
-    console.log(content)
     const res = await fetch(createURL('/api/message'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -11,6 +10,30 @@ export const createMessage = async (content: string, chatId: string) => {
             content: content,
             chatId: chatId,
         }),
+    })
+
+    if (res.ok) {
+        const data = await res.json()
+        return data.data
+    }
+}
+
+export const getMessages = async (chatId: string) => {
+    const res = await fetch(createURL(`/api/message/${chatId}`), {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+    })
+
+    if (res.ok) {
+        const data = await res.json()
+
+        return data.data
+    }
+}
+export const getMessagesByUserId = async () => {
+    const res = await fetch(createURL(`/api/message`), {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
     })
 
     if (res.ok) {

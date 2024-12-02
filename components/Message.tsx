@@ -1,5 +1,7 @@
+'use client'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faGhost, faUser } from '@fortawesome/free-solid-svg-icons' // Import chatbot or robot icon
+import { marked } from 'marked'
 
 type Props = {
     message: {
@@ -13,6 +15,8 @@ type Props = {
 
 function Message({ message }: Props) {
     const isChatGPT = message.messageContent.M.role.S == 'assistant'
+    const htmlContent = marked(message.messageContent.M.content.S);
+
 
     return (
         <div
@@ -36,8 +40,9 @@ function Message({ message }: Props) {
                     className={`pt-1 text-md ${
                         isChatGPT ? '' : 'bg-[#2f2f2f] rounded-2xl px-4 py-2'
                     }`}
+                    dangerouslySetInnerHTML={{ __html: htmlContent }}
                 >
-                    {message.messageContent.M.content.S}
+                    {/* {message.messageContent.M.content.S} */}
                 </div>
                 {isChatGPT ? (
                     ''

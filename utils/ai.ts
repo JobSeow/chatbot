@@ -9,11 +9,7 @@ export const analyze = async (
     incomingMessageContent: Message
 ) => {
     const openai = new OpenAI()
-    console.log(incomingMessageContent)
-    console.log(context)
-
     const allMessages = [...context, incomingMessageContent]
-    console.log(allMessages)
     const stream = await openai.chat.completions.create({
         model: 'gpt-4o-mini',
         messages: allMessages,

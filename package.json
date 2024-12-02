@@ -21,6 +21,7 @@
     "aws-sdk": "^2.1692.0",
     "eslint": "9.16.0",
     "eslint-config-next": "15.0.3",
+    "marked": "^15.0.3",
     "next": "15.0.3",
     "openai": "^4.73.1",
     "postcss": "8.4.49",
@@ -28,6 +29,7 @@
     "react-dom": "18.3.1",
     "react-fontawesome": "^1.7.1",
     "tailwindcss": "3.4.15",
-    "typescript": "5.7.2"
+    "typescript": "5.7.2",
+    "uuid": "^11.0.3"
   }
 }
