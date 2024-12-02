@@ -1,5 +1,5 @@
 'use client'
-import { getMessagesByUserId } from '@/utils/api'
+import { getMessagesByUserEmail } from '@/utils/api'
 import { UserButton } from '@clerk/nextjs'
 import { faPlus } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -22,7 +22,7 @@ function SideBar() {
     const getMessagesByUser = async () => {
         try {
             setIsLoading(true)
-            const result = await getMessagesByUserId()
+            const result = await getMessagesByUserEmail()
             setChats(result)
             setIsLoading(false)
         } catch (error: any) {

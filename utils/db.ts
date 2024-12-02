@@ -7,7 +7,7 @@ import {
 
 export async function addMessage(
     messageId: string,
-    userId: string,
+    userEmail: string,
     content: string,
     role: string,
     chatId: string
@@ -17,7 +17,7 @@ export async function addMessage(
         Item: {
             chatId: { S: chatId },
             messageId: { S: messageId },
-            userId: { S: userId },
+            userEmail: { S: userEmail },
             messageContent: {
                 M: {
                     role: { S: role },
@@ -38,17 +38,23 @@ export async function addMessage(
     }
 }
 
-export async function getMessagesByChatId(chatId: string) {
+export async function getMessagesByChatIdAndUserEmail(
+    chatId: string,
+    userEmail: string
+) {
     const params = {
         TableName: 'Messages',
-        KeyConditionExpression: 'chatId = :chatId',
+        KeyConditionExpression: 'chatId = :chatId AND userEmail=:userEmail',
+        FilterExpression: 'chatId = :chatId AND userEmail=:userEmail',
         ExpressionAttributeValues: {
-            ':chatId': { S: chatId }, // Specify the data type
+            ':chatId': { S: chatId },
+            ':userEmail': { S: userEmail },
         },
     }
+    console.log(params)
 
     try {
-        const command = new QueryCommand(params)
+        const command = new ScanCommand(params)
         const data = await db.send(command)
         return data.Items // Returns the messages for the given userId
     } catch (error) {
@@ -57,12 +63,12 @@ export async function getMessagesByChatId(chatId: string) {
     }
 }
 
-export async function getUserById(userId: string) {
+export async function getUserById(userEmail: string) {
     const params = {
         TableName: 'Users',
-        KeyConditionExpression: 'userId = :userId',
+        KeyConditionExpression: 'userEmail = :userEmail',
         ExpressionAttributeValues: {
-            ':userId': { S: userId },
+            ':userEmail': { S: userEmail },
         },
     }
     try {
@@ -94,13 +100,13 @@ export async function createUser(userId: string, emailAddress: string) {
     }
 }
 
-export async function getMessagesByUserId(userId: string) {
+export async function getMessagesByUserEmail(userEmail: string) {
     const params = {
         TableName: 'Messages',
-        KeyConditionExpression: 'userId = :userId', // Assuming userId is the partition key
-        FilterExpression: 'userId = :userId', // Apply a filter for chatId (non-key attribute)
+        KeyConditionExpression: 'userEmail = :userEmail', // Assuming userId is the partition key
+        FilterExpression: 'userEmail = :userEmail', // Apply a filter for chatId (non-key attribute)
         ExpressionAttributeValues: {
-            ':userId': { S: userId }, // Dynamically insert the userId value
+            ':userEmail': { S: userEmail }, // Dynamically insert the userId value
         },
     }
 

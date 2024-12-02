@@ -1,19 +1,28 @@
 import { analyze } from '@/utils/ai'
 import {
     addMessage,
-    getMessagesByUserId,
-    getMessagesByChatId,
+    getMessagesByUserEmail,
+    getMessagesByChatIdAndUserEmail,
 } from '@/utils/db'
 import { NextResponse } from 'next/server'
-import { auth } from '@clerk/nextjs/server'
+import { currentUser } from '@clerk/nextjs/server'
 
 export const POST = async (request: any) => {
-    const { userId } = await auth()
+    const user = await currentUser()
     const { content, chatId } = await request.json()
-    let messageId = `${userId}-${Date.now()}`
+    let messageId = `${user.id}-${Date.now()}`
 
-    await addMessage(messageId, userId, content, 'user', chatId)
-    const previousMessages = await getMessagesByChatId(chatId)
+    await addMessage(
+        messageId,
+        user?.primaryEmailAddress?.emailAddress,
+        content,
+        'user',
+        chatId
+    )
+    const previousMessages = await getMessagesByChatIdAndUserEmail(
+        chatId,
+        user?.primaryEmailAddress?.emailAddress
+    )
     const context = previousMessages?.map((message) => {
         return {
             content: message?.messageContent?.M.content.S,
@@ -25,10 +34,10 @@ export const POST = async (request: any) => {
         content: content,
     })
     const { refusal, ...analysisResultToSave } = analysisResult.message
-    messageId = `${userId}-${Date.now()}`
+    messageId = `${user.id}-${Date.now()}`
     await addMessage(
         messageId,
-        userId,
+        user?.primaryEmailAddress?.emailAddress,
         analysisResultToSave?.content,
         'assistant',
         chatId
@@ -39,9 +48,11 @@ export const POST = async (request: any) => {
 }
 
 export const GET = async () => {
-    const { userId } = await auth()
-    if (userId) {
-        const data = await getMessagesByUserId(userId)
+    const user = await currentUser()
+    if (user) {
+        const data = await getMessagesByUserEmail(
+            user?.primaryEmailAddress?.emailAddress
+        )
 
         return NextResponse.json({ data: data })
     }

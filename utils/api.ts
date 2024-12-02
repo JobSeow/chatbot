@@ -30,7 +30,7 @@ export const getMessages = async (chatId: string) => {
         return data.data
     }
 }
-export const getMessagesByUserId = async () => {
+export const getMessagesByUserEmail = async () => {
     const res = await fetch(createURL(`/api/message`), {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' },
