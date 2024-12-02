@@ -47,7 +47,7 @@
 
 Objective: Create a chatbot application that lets users interact with Al language models (like ChatGPT or Claude). This project should showcase your ability to build a complete web application with proper authentication, data persistence, and a polished user.
 
-DEMO ()
+DEMO (https://www.job-seow-chatbot.com/) (just-in-case: https://chatbot-ten-phi-12.vercel.app/)
 
 ![screenshot](./public/chatbot-ui.jpeg)
 
