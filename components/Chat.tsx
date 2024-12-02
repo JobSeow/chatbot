@@ -46,7 +46,6 @@ function Chat({ chatId }: Props) {
         <>
             <div className="flex-1 overflow-y-auto overflow-x-hidden">
                 <OverlaySpinner isLoading={isLoading} />
-
                 {messages?.map((message) => {
                     return <Message key={message.messageId} message={message} />
                 })}

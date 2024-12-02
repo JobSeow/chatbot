@@ -43,7 +43,6 @@ function ChatInput({ sendMessage, setPrompt, prompt }: Props) {
                     disabled={false}
                     type="submit"
                     onClick={() => {
-                        setIsLoading(true)
                         sendMessage()
                     }}
                     className="text-gray-200

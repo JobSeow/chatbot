@@ -1,7 +1,11 @@
 'use client'
 import { getMessagesByUserEmail } from '@/utils/api'
 import { UserButton } from '@clerk/nextjs'
-import { faPlus } from '@fortawesome/free-solid-svg-icons'
+import {
+    faPlus,
+    faSpinner,
+    faTruckLoading,
+} from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
@@ -10,10 +14,9 @@ import { useUser } from '@clerk/nextjs'
 import { v4 as uuidv4 } from 'uuid'
 
 function SideBar() {
-    const { user } = useUser()
     const [chats, setChats] = useState([])
+    const [refresh, setRefresh] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
-    // console.log(chats);
 
     useEffect(() => {
         getMessagesByUser()
@@ -50,7 +53,9 @@ function SideBar() {
                         <UserButton afterSignOutUrl="/" />
                     </div>
 
-                    <div>history</div>
+                    <div className={` bg-gray-700/50 flex items-center gap-2`}>
+                        history
+                    </div>
 
                     <div className="flex flex-col space-y-2 my-2">
                         {isLoading && (
@@ -68,6 +73,13 @@ function SideBar() {
                                 />
                             )
                         })}
+                        <div
+                            className={` bg-gray-700/50 flex items-center gap-2`}
+                        >
+                            <button onClick={getMessagesByUser}>
+                                <FontAwesomeIcon icon={faSpinner} /> refresh
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
